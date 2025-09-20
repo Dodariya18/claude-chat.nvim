@@ -1,0 +1,241 @@
+*claude-chat.txt*	Neovim plugin for chatting with Claude Code	*claude-chat*
+
+==============================================================================
+CONTENTS						*claude-chat-contents*
+
+    1. Introduction ........................ |claude-chat-introduction|
+    2. Requirements ........................ |claude-chat-requirements|
+    3. Installation ........................ |claude-chat-installation|
+    4. Usage ............................... |claude-chat-usage|
+    5. Configuration ....................... |claude-chat-configuration|
+    6. Commands ............................ |claude-chat-commands|
+    7. Keymaps ............................. |claude-chat-keymaps|
+    8. Functions ........................... |claude-chat-functions|
+    9. Examples ............................ |claude-chat-examples|
+
+==============================================================================
+1. INTRODUCTION					*claude-chat-introduction*
+
+claude-chat.nvim is a Neovim plugin for chatting with Claude Code directly
+from within Neovim. It provides an interactive terminal interface that
+automatically shares file context and text selections with Claude.
+
+The plugin's core purpose is to help formulate prompts and launch Claude Code
+CLI with relevant context. It does not attempt to configure Claude in any way.
+
+Features:
+• Interactive chat with Claude Code in a terminal split
+• Automatic file context sharing (current file path, filetype, selections)
+• Support for text selections and visual ranges
+• Configurable split positioning and sizing
+• File watching for live context updates
+
+==============================================================================
+2. REQUIREMENTS					*claude-chat-requirements*
+
+• Neovim 0.7+
+• Claude Code CLI installed and available in PATH as `claude`
+  Download from: https://claude.com/product/claude-code
+
+==============================================================================
+3. INSTALLATION					*claude-chat-installation*
+
+Using lazy.nvim: >lua
+    {
+      "wtfox/claude-chat.nvim",
+      config = true,
+      opts = {
+        -- Optional configuration
+        split = "vsplit",      -- "vsplit" or "split"
+        position = "right",    -- "right", "left", "top", "bottom"
+        width = 0.4,          -- percentage of screen width (for vsplit)
+        height = 0.4,         -- percentage of screen height (for split)
+        claude_cmd = "claude", -- command to invoke Claude Code
+      },
+      keys = {
+        { "<leader>cc", ":ClaudeChat<CR>", desc = "Ask Claude", mode = { "n", "v" } },
+      },
+    }
+<
+
+Using packer.nvim: >lua
+    use {
+      'wtfox/claude-chat.nvim',
+      config = function()
+        require('claude-chat').setup({
+          -- your config here
+        })
+      end
+    }
+<
+
+==============================================================================
+4. USAGE						*claude-chat-usage*
+
+The plugin behavior depends on your input and current text selection:
+
+1. No prompt + No selection: Opens plain Claude terminal
+2. No prompt + Text selected: Sends selection with file context
+3. With prompt + No selection: Sends prompt with current file context
+4. With prompt + Text selected: Sends both prompt and selection context
+
+Usage Examples:
+
+General chat:
+    <leader>cc → (leave input empty) → Opens plain Claude
+
+Ask about file:
+    <leader>cc → "What does this file do?" → Sends question + file context
+
+Ask about selection:
+    Select code → <leader>cc → (leave input empty) → Sends just the selection
+
+Ask about selection with question:
+    Select code → <leader>cc → "Optimize this" → Sends question + selection
+
+Direct command:
+    :ClaudeChat explain this bug → Sends question + file context (no dialog)
+
+==============================================================================
+5. CONFIGURATION				*claude-chat-configuration*
+
+Configure claude-chat.nvim by passing options to the setup function: >lua
+    require('claude-chat').setup({
+      split = "vsplit",      -- "vsplit" for vertical, "split" for horizontal
+      position = "right",    -- "right", "left", "top", "bottom"
+      width = 0.4,          -- percentage of screen width (for vsplit)
+      height = 0.4,         -- percentage of screen height (for split)
+      claude_cmd = "claude", -- command to invoke Claude Code CLI
+    })
+<
+
+Configuration Options:				*claude-chat-config-options*
+
+split						*claude-chat-split*
+    Type: string
+    Default: "vsplit"
+    Options: "vsplit", "split"
+    Controls whether to create a vertical or horizontal split.
+
+position					*claude-chat-position*
+    Type: string
+    Default: "right"
+    Options: "right", "left", "top", "bottom"
+    Controls the position of the split window.
+
+width						*claude-chat-width*
+    Type: number
+    Default: 0.4
+    Range: 0.1 - 0.9
+    Percentage of screen width for vertical splits.
+
+height						*claude-chat-height*
+    Type: number
+    Default: 0.4
+    Range: 0.1 - 0.9
+    Percentage of screen height for horizontal splits.
+
+claude_cmd					*claude-chat-claude-cmd*
+    Type: string
+    Default: "claude"
+    Command used to invoke Claude Code CLI.
+
+==============================================================================
+6. COMMANDS					*claude-chat-commands*
+
+*:ClaudeChat* [prompt]
+    Opens Claude chat interface. If [prompt] is provided, it will be sent
+    along with file context. If no prompt is provided, you will be prompted
+    for input.
+
+    Examples: >
+        :ClaudeChat
+        :ClaudeChat explain this function
+        :ClaudeChat how can I optimize this code
+<
+
+==============================================================================
+7. KEYMAPS					*claude-chat-keymaps*
+
+Terminal Keymaps (active when in Claude chat terminal):
+
+q		Close the Claude chat (normal mode)
+i		Enter insert mode to type messages (normal mode)
+a		Enter insert mode at end of line (normal mode)
+<C-c>		Close Claude chat (terminal mode)
+<C-f>		Insert current filename into input (terminal mode)
+
+==============================================================================
+8. FUNCTIONS					*claude-chat-functions*
+
+claude-chat.setup({opts})				*claude-chat.setup()*
+    Setup function to configure the plugin.
+
+    Parameters: ~
+        {opts} (table) Configuration options table
+
+claude-chat.ask_claude({input}, {has_range}, {line1}, {line2})  *claude-chat.ask_claude()*
+    Main function to start Claude chat with context.
+
+    Parameters: ~
+        {input}     (string) User input/prompt
+        {has_range} (number) Whether text is selected (>0 if yes)
+        {line1}     (number) Start line of selection
+        {line2}     (number) End line of selection
+
+claude-chat.close_chat()				*claude-chat.close_chat()*
+    Closes the active Claude chat session and cleans up resources.
+
+claude-chat.get_state()					*claude-chat.get_state()*
+    Returns the current plugin state including window, buffer, and job IDs.
+
+==============================================================================
+9. EXAMPLES					*claude-chat-examples*
+
+Basic Setup: >lua
+    require('claude-chat').setup()
+<
+
+Custom Configuration: >lua
+    require('claude-chat').setup({
+      split = "split",       -- horizontal split
+      position = "bottom",   -- at the bottom
+      height = 0.3,         -- 30% of screen height
+      claude_cmd = "claude", -- default command
+    })
+<
+
+Using with Different Key Mappings: >lua
+    vim.keymap.set({'n', 'v'}, '<leader>cc', ':ClaudeChat<CR>',
+                   { desc = 'Chat with Claude' })
+    vim.keymap.set('n', '<leader>cq', ':ClaudeChat explain this code<CR>',
+                   { desc = 'Quick Claude explanation' })
+<
+
+Workflow Examples:
+
+1. General Chat Session:
+   • Press <leader>cc
+   • Leave prompt empty (press Enter)
+   • Start general conversation with Claude
+
+2. Code Explanation:
+   • Open a code file
+   • Press <leader>cc
+   • Type: "Explain what this file does"
+   • File context is automatically included
+
+3. Code Review:
+   • Select problematic code (visual mode)
+   • Press <leader>cc
+   • Type: "Review this code for bugs"
+   • Both selection and file context are sent
+
+4. Quick Selection Analysis:
+   • Select code in visual mode
+   • Press <leader>cc
+   • Press Enter (no additional prompt)
+   • Just the selection with file context is sent
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:
