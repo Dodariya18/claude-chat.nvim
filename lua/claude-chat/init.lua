@@ -13,7 +13,11 @@ function M.setup(opts)
 		if cmd_opts.args and cmd_opts.args ~= "" then
 			user_input = cmd_opts.args
 		else
-			user_input = vim.fn.input "Ask Claude: "
+			local ok, input = pcall(vim.fn.input, "Ask Claude: ")
+			if not ok then
+				return
+			end
+			user_input = input
 		end
 		M.ask_claude(user_input, cmd_opts.range, cmd_opts.line1, cmd_opts.line2)
 	end, {
@@ -38,7 +42,6 @@ function M.ask_claude(user_input, has_range, line1, line2)
 		prompt = context.format_prompt(ctx, user_input, has_range)
 	end
 
-	print("prompt: ", prompt)
 	window.start_claude_terminal(prompt)
 end
 
