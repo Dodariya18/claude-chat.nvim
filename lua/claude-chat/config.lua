@@ -1,6 +1,6 @@
 local M = {}
 
----@type Config
+---@type claude-chat.Config
 M.defaults = {
 	split = "vsplit",
 	position = "right", --ignored for float
