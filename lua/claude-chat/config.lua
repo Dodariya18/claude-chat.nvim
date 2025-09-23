@@ -13,10 +13,10 @@ M.defaults = {
 		title_pos = "center",
 	},
 	keymaps = {
-		global = "<C-h>", -- Global keymap for ClaudeChat command (set to nil to disable)
+		global = "<C-.>", -- Global keymap for ClaudeChat command (set to nil to disable)
 		terminal = {
 			close = "<C-q>", -- Close chat from terminal mode
-			toggle = "<C-h>", -- Toggle chat window visibility
+			toggle = "<C-.>", -- Toggle chat window visibility
 			normal_mode = "<Esc><Esc>", -- Exit terminal mode to normal mode
 			insert_file = "<C-f>", -- Insert current file path
 			interrupt = "<C-c>", -- Interrupt/close chat

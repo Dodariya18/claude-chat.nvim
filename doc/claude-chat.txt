@@ -16,19 +16,21 @@ CONTENTS						*claude-chat-contents*
 ==============================================================================
 1. INTRODUCTION					*claude-chat-introduction*
 
-claude-chat.nvim is a Neovim plugin for chatting with Claude Code directly
-from within Neovim. It provides an interactive terminal interface that
-automatically shares file context and text selections with Claude.
+claude-chat.nvim is a Neovim plugin for seamless integration with Claude Code
+CLI directly from within Neovim. It provides an interactive terminal interface
+that automatically shares file context and text selections with Claude.
 
 The plugin's core purpose is to help formulate prompts and launch Claude Code
 CLI with relevant context. It does not attempt to configure Claude in any way.
 
 Features:
-• Interactive chat with Claude Code in a terminal split
+• Interactive chat with Claude Code in customizable split or floating windows
 • Automatic file context sharing (current file path, filetype, selections)
 • Support for text selections and visual ranges
-• Configurable split positioning and sizing
-• File watching for live context updates
+• Window toggle functionality - hide/restore chat sessions
+• Enhanced terminal ergonomics with configurable keybinds
+• Live file watching for real-time context updates
+• Floating window support with borders and titles
 
 ==============================================================================
 2. REQUIREMENTS					*claude-chat-requirements*
@@ -40,20 +42,52 @@ Features:
 ==============================================================================
 3. INSTALLATION					*claude-chat-installation*
 
-Using lazy.nvim: >lua
+Recommended setup with lazy.nvim: >lua
+    {
+      "wtfox/claude-chat.nvim",
+      config = true,
+    }
+<
+
+Note: The <C-.> keymap is automatically configured. No manual keymap setup needed!
+
+Full configuration example: >lua
     {
       "wtfox/claude-chat.nvim",
       config = true,
       opts = {
-        -- Optional configuration
-        split = "vsplit",      -- "vsplit" or "split"
-        position = "right",    -- "right", "left", "top", "bottom"
-        width = 0.4,          -- percentage of screen width (for vsplit)
-        height = 0.4,         -- percentage of screen height (for split)
+        split = "vsplit",      -- "vsplit", "split", or "float"
+        position = "right",    -- "right", "left", "top", "bottom" (ignored for float)
+        width = 0.6,          -- percentage of screen width (for vsplit or float)
+        height = 0.8,         -- percentage of screen height (for split or float)
         claude_cmd = "claude", -- command to invoke Claude Code
+        float_opts = {        -- options for floating window
+          relative = "editor",
+          border = "rounded",
+          title = " Claude Chat ",
+          title_pos = "center",
+        },
+        keymaps = {
+          global = "<C-.>",   -- Global keymap (set to nil to disable)
+          terminal = {        -- Terminal mode keybindings
+            close = "<C-q>",
+            toggle = "<C-.>",
+            normal_mode = "<Esc><Esc>",
+            insert_file = "<C-f>",
+            interrupt = "<C-c>",
+          },
+        },
       },
-      keys = {
-        { "<leader>cc", ":ClaudeChat<CR>", desc = "Ask Claude", mode = { "n", "v" } },
+    }
+<
+
+Disable automatic keymaps: >lua
+    {
+      "wtfox/claude-chat.nvim",
+      opts = {
+        keymaps = {
+          global = nil, -- Disable automatic keymap setup
+        },
       },
     }
 <
@@ -72,40 +106,64 @@ Using packer.nvim: >lua
 ==============================================================================
 4. USAGE						*claude-chat-usage*
 
-The plugin behavior depends on your input and current text selection:
+The plugin intelligently adapts based on your input, text selection, and
+current session state:
 
-1. No prompt + No selection: Opens plain Claude terminal
-2. No prompt + Text selected: Sends selection with file context
+Behavior Table:
+1. No prompt + No selection + No session: Opens plain Claude terminal
+2. No prompt + Text selected + No session: Sends selection with file context
 3. With prompt + No selection: Sends prompt with current file context
 4. With prompt + Text selected: Sends both prompt and selection context
+5. No prompt + Active session: Toggles chat window visibility
 
 Usage Examples:
 
-General chat:
-    <leader>cc → (leave input empty) → Opens plain Claude
+General chat (start new session):
+    <C-.> → (leave input empty) → Opens plain Claude
 
-Ask about file:
-    <leader>cc → "What does this file do?" → Sends question + file context
+Ask about current file:
+    <C-.> → "What does this file do?" → Sends question + file context
 
-Ask about selection:
-    Select code → <leader>cc → (leave input empty) → Sends just the selection
+Ask about selection only:
+    Select code → <C-.> → (leave input empty) → Sends just the selection
 
 Ask about selection with question:
-    Select code → <leader>cc → "Optimize this" → Sends question + selection
+    Select code → <C-.> → "Optimize this" → Sends question + selection
 
 Direct command:
     :ClaudeChat explain this bug → Sends question + file context (no dialog)
+
+Toggle window visibility:
+    Start session → <C-.> → "help debug this"
+    Hide window → <C-.> → (just press Enter)
+    Restore window → <C-.> → (just press Enter)
 
 ==============================================================================
 5. CONFIGURATION				*claude-chat-configuration*
 
 Configure claude-chat.nvim by passing options to the setup function: >lua
     require('claude-chat').setup({
-      split = "vsplit",      -- "vsplit" for vertical, "split" for horizontal
-      position = "right",    -- "right", "left", "top", "bottom"
-      width = 0.4,          -- percentage of screen width (for vsplit)
-      height = 0.4,         -- percentage of screen height (for split)
+      split = "vsplit",      -- "vsplit", "split", or "float"
+      position = "right",    -- "right", "left", "top", "bottom" (ignored for float)
+      width = 0.6,          -- percentage of screen width (for vsplit or float)
+      height = 0.8,         -- percentage of screen height (for split or float)
       claude_cmd = "claude", -- command to invoke Claude Code CLI
+      float_opts = {        -- floating window options
+        relative = "editor",
+        border = "rounded",
+        title = " Claude Chat ",
+        title_pos = "center",
+      },
+      keymaps = {           -- keymap configuration
+        global = "<C-.>",   -- global keymap for ClaudeChat command
+        terminal = {        -- terminal mode keybindings
+          close = "<C-q>",
+          toggle = "<C-.>",
+          normal_mode = "<Esc><Esc>",
+          insert_file = "<C-f>",
+          interrupt = "<C-c>",
+        },
+      },
     })
 <
 
@@ -114,39 +172,67 @@ Configuration Options:				*claude-chat-config-options*
 split						*claude-chat-split*
     Type: string
     Default: "vsplit"
-    Options: "vsplit", "split"
-    Controls whether to create a vertical or horizontal split.
+    Options: "vsplit", "split", "float"
+    Controls the window type: vertical split, horizontal split, or floating.
 
 position					*claude-chat-position*
     Type: string
     Default: "right"
     Options: "right", "left", "top", "bottom"
-    Controls the position of the split window.
+    Controls the position of split windows (ignored for floating windows).
 
 width						*claude-chat-width*
     Type: number
-    Default: 0.4
+    Default: 0.6
     Range: 0.1 - 0.9
-    Percentage of screen width for vertical splits.
+    Percentage of screen width for vertical splits and floating windows.
 
 height						*claude-chat-height*
     Type: number
-    Default: 0.4
+    Default: 0.8
     Range: 0.1 - 0.9
-    Percentage of screen height for horizontal splits.
+    Percentage of screen height for horizontal splits and floating windows.
 
 claude_cmd					*claude-chat-claude-cmd*
     Type: string
     Default: "claude"
     Command used to invoke Claude Code CLI.
 
+float_opts					*claude-chat-float-opts*
+    Type: table
+    Default: See installation example
+    Configuration options for floating windows (border, title, etc.).
+    Only used when split = "float".
+
+keymaps						*claude-chat-keymaps-config*
+    Type: table
+    Default: See installation example
+    Configuration for all keymap settings:
+
+    keymaps.global				*claude-chat-keymaps-global*
+        Type: string|nil
+        Default: "<C-.>"
+        Global keymap for ClaudeChat command. Set to nil to disable.
+
+    keymaps.terminal			*claude-chat-keymaps-terminal*
+        Type: table
+        Configuration for terminal mode keybindings:
+
+        • close: Quick close from terminal mode (default: "<C-q>")
+        • toggle: Toggle window visibility (default: "<C-.>")
+        • normal_mode: Exit terminal to normal mode (default: "<Esc><Esc>")
+        • insert_file: Insert current file path (default: "<C-f>")
+        • interrupt: Interrupt/close chat (default: "<C-c>")
+
 ==============================================================================
 6. COMMANDS					*claude-chat-commands*
 
 *:ClaudeChat* [prompt]
-    Opens Claude chat interface. If [prompt] is provided, it will be sent
-    along with file context. If no prompt is provided, you will be prompted
-    for input.
+    Main command for Claude chat interface. Behavior depends on current state:
+
+    - With [prompt]: Sends prompt with file context
+    - No prompt + no session: Prompts for input, starts new session
+    - No prompt + active session: Toggles window visibility
 
     Examples: >
         :ClaudeChat
@@ -157,13 +243,25 @@ claude_cmd					*claude-chat-claude-cmd*
 ==============================================================================
 7. KEYMAPS					*claude-chat-keymaps*
 
-Terminal Keymaps (active when in Claude chat terminal):
+Global Keymaps (recommended setup):
+<C-.>		Toggle Claude Chat (start/hide/show)
 
-q		Close the Claude chat (normal mode)
-i		Enter insert mode to type messages (normal mode)
-a		Enter insert mode at end of line (normal mode)
-<C-c>		Close Claude chat (terminal mode)
-<C-f>		Insert current filename into input (terminal mode)
+Terminal Keymaps - Normal Mode (after pressing <Esc><Esc>):
+q		Close the Claude chat
+i		Enter insert mode to type messages
+a		Enter insert mode at end of line
+
+Terminal Keymaps - Terminal Mode (works anytime):
+<C-q>		Quick close the chat
+<C-.>		Toggle window visibility
+<C-f>		Insert current filename into input
+<C-c>		Exit Claude Chat
+<Esc><Esc>	Exit to normal mode
+<C-\><C-N>	Alternative: Exit to normal mode
+
+Auto-behaviors:
+• Terminal automatically enters insert mode when focused
+• Window-specific appearance (no line numbers, signs, etc.)
 
 ==============================================================================
 8. FUNCTIONS					*claude-chat-functions*
@@ -183,8 +281,13 @@ claude-chat.ask_claude({input}, {has_range}, {line1}, {line2})  *claude-chat.ask
         {line1}     (number) Start line of selection
         {line2}     (number) End line of selection
 
+claude-chat.toggle_chat_window()			*claude-chat.toggle_chat_window()*
+    Toggles the visibility of the Claude chat window. Hides if visible,
+    restores if hidden. Only works when a session is active.
+
 claude-chat.close_chat()				*claude-chat.close_chat()*
     Closes the active Claude chat session and cleans up resources.
+    This fully terminates the session, unlike toggle which preserves it.
 
 claude-chat.get_state()					*claude-chat.get_state()*
     Returns the current plugin state including window, buffer, and job IDs.
@@ -192,48 +295,82 @@ claude-chat.get_state()					*claude-chat.get_state()*
 ==============================================================================
 9. EXAMPLES					*claude-chat-examples*
 
-Basic Setup: >lua
+Basic Setup (with automatic <C-.> keymap): >lua
     require('claude-chat').setup()
 <
 
-Custom Configuration: >lua
+Custom Floating Window Configuration: >lua
     require('claude-chat').setup({
-      split = "split",       -- horizontal split
-      position = "bottom",   -- at the bottom
-      height = 0.3,         -- 30% of screen height
-      claude_cmd = "claude", -- default command
+      split = "float",
+      width = 0.8,
+      height = 0.9,
+      float_opts = {
+        border = "double",
+        title = " My Claude Assistant ",
+        title_pos = "left",
+      },
     })
 <
 
-Using with Different Key Mappings: >lua
-    vim.keymap.set({'n', 'v'}, '<leader>cc', ':ClaudeChat<CR>',
-                   { desc = 'Chat with Claude' })
-    vim.keymap.set('n', '<leader>cq', ':ClaudeChat explain this code<CR>',
-                   { desc = 'Quick Claude explanation' })
+Custom Terminal Keybindings: >lua
+    require('claude-chat').setup({
+      keymaps = {
+        global = "<leader>cc",
+        terminal = {
+          close = "<C-x>",
+          toggle = "<C-t>",
+          normal_mode = "<Esc>",
+          insert_file = "<C-p>",
+          interrupt = "<C-c>",
+        },
+      },
+    })
+<
+
+Disable Auto-Keymaps (Manual Setup): >lua
+    require('claude-chat').setup({
+      keymaps = {
+        global = nil, -- Disable automatic keymap
+      },
+    })
+
+    -- Set up your own keymaps
+    vim.keymap.set({'n', 'v'}, '<leader>ai', ':ClaudeChat<CR>',
+                   { desc = 'AI Assistant' })
+    vim.keymap.set('n', '<leader>aq', ':ClaudeChat explain this code<CR>',
+                   { desc = 'Quick AI explanation' })
 <
 
 Workflow Examples:
 
-1. General Chat Session:
-   • Press <leader>cc
-   • Leave prompt empty (press Enter)
-   • Start general conversation with Claude
+1. Quick Toggle Workflow (Recommended):
+   • Press <C-.> anywhere to start Claude
+   • Type your question or leave empty for context-only
+   • Press <C-.> in terminal to hide window while working
+   • Press <C-.> again to restore and continue conversation
+   • Press <C-c> or <C-q> in terminal to fully exit
 
-2. Code Explanation:
-   • Open a code file
-   • Press <leader>cc
+2. Floating Window Session:
+   • Configure with split = "float"
+   • Use <C-.> to toggle floating Claude window
+   • Floating window stays centered and accessible
+
+3. Code Review Workflow:
+   • Select problematic code (visual mode)
+   • Press <C-.>
+   • Type: "Review this code for bugs"
+   • Claude receives both selection and file context
+   • Hide with <C-.>, restore to see suggestions
+
+4. File Analysis:
+   • Open a new file you want to understand
+   • Press <C-.>
    • Type: "Explain what this file does"
    • File context is automatically included
 
-3. Code Review:
-   • Select problematic code (visual mode)
-   • Press <leader>cc
-   • Type: "Review this code for bugs"
-   • Both selection and file context are sent
-
-4. Quick Selection Analysis:
-   • Select code in visual mode
-   • Press <leader>cc
+5. Selection-Only Analysis:
+   • Select complex code in visual mode
+   • Press <C-.>
    • Press Enter (no additional prompt)
    • Just the selection with file context is sent
 

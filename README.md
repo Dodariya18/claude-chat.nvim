@@ -27,8 +27,15 @@ https://github.com/user-attachments/assets/a91b3a0d-03bc-4810-b83a-c629bcf8cd46
 
 ### Using [lazy.nvim](https://github.com/folke/lazy.nvim)
 
-Recommended
+**Recommended (simple setup):**
+```lua
+{
+  "wtfox/claude-chat.nvim",
+  config = true,
+}
+```
 
+**With custom options:**
 ```lua
 {
   "wtfox/claude-chat.nvim",
@@ -50,12 +57,9 @@ Recommended
     --   global = "<leader>cc",
     --   terminal = {
     --     close = "<C-q>",
-    --     toggle = "<C-h>",
+    --     toggle = "<C-.>",
     --   },
     -- },
-  },
-  keys = {
-    { "<C-h>", ":ClaudeChat<CR>", desc = "Toggle Claude Chat", mode = { "n", "v" } },
   },
 }
 ```
@@ -94,7 +98,7 @@ The plugin intelligently adapts based on your input, text selection, and current
 
 | Command | Description |
 |---------|-------------|
-| `<C-h>` | **Recommended**: Toggle Claude Chat (start/hide/show) |
+| `<C-.>` | **Recommended**: Toggle Claude Chat (start/hide/show) |
 | `:ClaudeChat` | Interactive prompt or toggle if session active |
 | `:ClaudeChat <prompt>` | Direct command without dialog |
 
@@ -111,7 +115,7 @@ The plugin intelligently adapts based on your input, text selection, and current
 | Key | Action |
 |-----|--------|
 | `<C-q>` | Quick close the chat |
-| `<C-h>` | Toggle window visibility |
+| `<C-.>` | Toggle window visibility |
 | `<C-f>` | Insert current filename into input |
 | `<C-c>` | Exit Claude Chat |
 | `<Esc><Esc>` | Exit to normal mode |
@@ -170,16 +174,16 @@ Skip the dialog and send commands directly.
 <summary><strong>🔄 Toggle Window Visibility</strong></summary>
 
 ```
-1. Start a Claude session: <C-h> → "help me debug this"
-2. Hide the window: <C-h> → (no prompt, just press Enter)
-3. Restore the window: <C-h> → (no prompt, just press Enter)
+1. Start a Claude session: <C-.> → "help me debug this"
+2. Hide the window: <C-.> → (no prompt, just press Enter)
+3. Restore the window: <C-.> → (no prompt, just press Enter)
 ```
 Perfect for quickly hiding/showing Claude while preserving your conversation.
 
 **Using the Recommended Setup:**
-With `<C-h>` configured as your keymap, you get consistent behavior:
-- From anywhere: `<C-h>` starts Claude or toggles if running
-- In the terminal: `<C-h>` toggles window visibility
+With `<C-.>` configured as your keymap, you get consistent behavior:
+- From anywhere: `<C-.>` starts Claude or toggles if running
+- In the terminal: `<C-.>` toggles window visibility
 - One key for all Claude interactions!
 </details>
 
@@ -187,22 +191,19 @@ With `<C-h>` configured as your keymap, you get consistent behavior:
 
 ### 🌟 Recommended Configuration
 
-For the best experience, we recommend this setup with `<C-h>` as your main Claude toggle:
+For the best experience, we recommend this simple setup. The `<C-.>` keymap is automatically configured:
 
 ```lua
 {
   "wtfox/claude-chat.nvim",
   config = true,
-  keys = {
-    { "<C-h>", ":ClaudeChat<CR>", desc = "Toggle Claude Chat", mode = { "n", "v" } },
-  },
 }
 ```
 
 This gives you:
-- `<C-h>` to start/toggle Claude from anywhere
-- `<C-h>` to hide/show the window when active
-- `<C-h>` inside the terminal to toggle visibility
+- `<C-.>` to start/toggle Claude from anywhere
+- `<C-.>` to hide/show the window when active
+- `<C-.>` inside the terminal to toggle visibility
 - Consistent keymap across all contexts
 
 **Disable Auto-Keymap:**
@@ -236,10 +237,10 @@ require('claude-chat').setup({
     title_pos = "center", -- "left", "center", "right"
   },
   keymaps = {
-    global = "<C-h>", -- Global keymap for ClaudeChat command (set to nil to disable)
+    global = "<C-.>", -- Global keymap for ClaudeChat command (set to nil to disable)
     terminal = {      -- Terminal mode keybindings
       close = "<C-q>",           -- Close chat from terminal mode
-      toggle = "<C-h>",          -- Toggle chat window visibility
+      toggle = "<C-.>",          -- Toggle chat window visibility
       normal_mode = "<Esc><Esc>", -- Exit terminal mode to normal mode
       insert_file = "<C-f>",     -- Insert current file path
       interrupt = "<C-c>",       -- Interrupt/close chat
