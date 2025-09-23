@@ -13,7 +13,7 @@ https://github.com/user-attachments/assets/a91b3a0d-03bc-4810-b83a-c629bcf8cd46
 ## ✨ Features
 
 - **🎯 Smart Context Sharing**: Automatically passes current file path, filetype, and text selections to Claude
-- **💬 Interactive Terminal**: Chat with Claude Code in a customizable split window with keybinds. (<C-f> injects current buffer filename)
+- **💬 Interactive Terminal**: Chat with Claude Code in a customizable split or floating window with keybinds. (<C-f> injects current buffer filename)
 - **📝 Visual Selection Support**: Works seamlessly with text selections and visual ranges
 - **⚙️ Flexible Configuration**: Configurable split positioning, sizing, and terminal behavior
 - **👀 Live File Watching**: Real-time context updates as you work
@@ -35,11 +35,17 @@ Recommended
   config = true,
   opts = {
     -- Optional configuration
-    split = "vsplit",      -- "vsplit" or "split"
-    position = "right",    -- "right", "left", "top", "bottom"
-    width = 0.4,          -- percentage of screen width (for vsplit)
-    height = 0.4,         -- percentage of screen height (for split)
+    split = "vsplit",      -- "vsplit", "split", or "float"
+    position = "right",    -- "right", "left", "top", "bottom" (ignored for float)
+    width = 0.6,          -- percentage of screen width (for vsplit or float)
+    height = 0.8,         -- percentage of screen height (for split or float)
     claude_cmd = "claude", -- command to invoke Claude Code
+    float_opts = {        -- options for floating window
+      relative = "editor",
+      border = "rounded",
+      title = " Claude Chat ",
+      title_pos = "center",
+    },
   },
   keys = {
     { "<leader>cc", ":ClaudeChat<CR>", desc = "Ask Claude", mode = { "n", "v" } },
@@ -149,11 +155,17 @@ Customize the plugin behavior with these options:
 
 ```lua
 require('claude-chat').setup({
-  split = "vsplit",      -- "vsplit" for vertical, "split" for horizontal
-  position = "right",    -- "right", "left", "top", "bottom"
-  width = 0.4,          -- percentage of screen width (for vsplit)
-  height = 0.4,         -- percentage of screen height (for split)
+  split = "vsplit",      -- "vsplit" for vertical, "split" for horizontal, "float" for floating
+  position = "right",    -- "right", "left", "top", "bottom" (ignored for float)
+  width = 0.6,          -- percentage of screen width (for vsplit or float)
+  height = 0.8,         -- percentage of screen height (for split or float)
   claude_cmd = "claude", -- command to invoke Claude Code CLI
+  float_opts = {        -- options for floating window (only used when split = "float")
+    relative = "editor",
+    border = "rounded",  -- "none", "single", "double", "rounded", "solid", "shadow"
+    title = " Claude Chat ",
+    title_pos = "center", -- "left", "center", "right"
+  },
 })
 ```
 
@@ -161,11 +173,12 @@ require('claude-chat').setup({
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `split` | `string` | `"vsplit"` | Split type: `"vsplit"` or `"split"` |
-| `position` | `string` | `"right"` | Position: `"right"`, `"left"`, `"top"`, `"bottom"` |
-| `width` | `number` | `0.4` | Width percentage (for vertical splits) |
-| `height` | `number` | `0.4` | Height percentage (for horizontal splits) |
+| `split` | `string` | `"vsplit"` | Split type: `"vsplit"`, `"split"`, or `"float"` |
+| `position` | `string` | `"right"` | Position: `"right"`, `"left"`, `"top"`, `"bottom"` (ignored for float) |
+| `width` | `number` | `0.6` | Width percentage (for vertical splits and float) |
+| `height` | `number` | `0.8` | Height percentage (for horizontal splits and float) |
 | `claude_cmd` | `string` | `"claude"` | Claude Code CLI command |
+| `float_opts` | `table` | See example | Floating window options (border, title, etc.) |
 
 ## 🔧 How It Works
 

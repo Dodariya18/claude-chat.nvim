@@ -14,7 +14,9 @@ function M.create_chat_window()
 	local height = vim.o.lines
 	local options = config.get()
 
-	if options.split == "vsplit" then
+	if options.split == "float" then
+		M.create_float_window()
+	elseif options.split == "vsplit" then
 		local split_width = math.floor(width * options.width)
 		if options.position == "right" then
 			vim.cmd("botright " .. split_width .. "vsplit")
@@ -32,6 +34,32 @@ function M.create_chat_window()
 
 	local win = vim.api.nvim_get_current_win()
 	state.get().win = win
+end
+
+function M.create_float_window()
+	local width = vim.o.columns
+	local height = vim.o.lines
+	local options = config.get()
+
+	local float_width = math.floor(width * options.width)
+	local float_height = math.floor(height * options.height)
+	local row = math.floor((height - float_height) / 2)
+	local col = math.floor((width - float_width) / 2)
+
+	local buf = vim.api.nvim_create_buf(false, true)
+
+	local float_opts = vim.tbl_deep_extend("force", {
+		relative = "editor",
+		width = float_width,
+		height = float_height,
+		row = row,
+		col = col,
+		style = "minimal",
+	}, options.float_opts or {})
+
+	local win = vim.api.nvim_open_win(buf, true, float_opts)
+	state.get().win = win
+	state.get().buf = buf
 end
 
 function M.setup_file_watcher()
@@ -83,10 +111,20 @@ function M.start_claude_terminal(prompt)
 		cmd = cmd .. " " .. vim.fn.shellescape(prompt)
 	end
 
-	vim.cmd("terminal " .. cmd)
-	local buf = vim.api.nvim_get_current_buf()
-	local job_id = vim.b.terminal_job_id
-	local win = vim.api.nvim_get_current_win()
+	local buf, job_id, win
+	if options.split == "float" then
+		buf = state.get().buf
+		win = state.get().win
+		vim.api.nvim_buf_call(buf, function()
+			vim.cmd("terminal " .. cmd)
+		end)
+		job_id = vim.api.nvim_buf_get_var(buf, "terminal_job_id")
+	else
+		vim.cmd("terminal " .. cmd)
+		buf = vim.api.nvim_get_current_buf()
+		job_id = vim.b.terminal_job_id
+		win = vim.api.nvim_get_current_win()
+	end
 
 	state.set_terminal_info(buf, win, job_id)
 
