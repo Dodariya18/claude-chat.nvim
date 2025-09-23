@@ -1,8 +1,9 @@
 local M = {}
 
+---@type Config
 M.defaults = {
-	split = "vsplit", -- vsplit, split, or float
-	position = "right", -- right, left, top, bottom (ignored for float)
+	split = "vsplit",
+	position = "right", --ignored for float
 	width = 0.4, -- percentage of screen width (for vsplit or float)
 	height = 0.8, -- percentage of screen height (for split or float)
 	claude_cmd = "claude", -- command to invoke Claude Code
