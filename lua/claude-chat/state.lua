@@ -8,6 +8,7 @@ local state = {
 	original_buf = nil,
 	timer = nil,
 	original_updatetime = nil,
+	hidden = false,
 }
 
 function M.get()
@@ -20,6 +21,7 @@ function M.reset()
 	state.job_id = nil
 	state.original_win = nil
 	state.original_buf = nil
+	state.hidden = false
 end
 
 function M.set_terminal_info(buf, win, job_id)
@@ -54,6 +56,18 @@ function M.restore_updatetime()
 		vim.o.updatetime = state.original_updatetime
 		state.original_updatetime = nil
 	end
+end
+
+function M.is_session_active()
+	return state.job_id ~= nil and state.buf ~= nil and vim.api.nvim_buf_is_valid(state.buf)
+end
+
+function M.is_window_visible()
+	return state.win ~= nil and vim.api.nvim_win_is_valid(state.win) and not state.hidden
+end
+
+function M.set_hidden(hidden)
+	state.hidden = hidden
 end
 
 return M

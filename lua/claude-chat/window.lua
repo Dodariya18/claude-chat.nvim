@@ -62,6 +62,37 @@ function M.create_float_window()
 	state.get().buf = buf
 end
 
+function M.hide_chat_window()
+	local state_data = state.get()
+	if state_data.win and vim.api.nvim_win_is_valid(state_data.win) then
+		vim.api.nvim_win_close(state_data.win, false)
+		state.get().win = nil
+		state.set_hidden(true)
+	end
+end
+
+function M.restore_chat_window()
+	local state_data = state.get()
+	if not state_data.buf or not vim.api.nvim_buf_is_valid(state_data.buf) then
+		return
+	end
+
+	local options = config.get()
+	if options.split == "float" then
+		M.create_float_window()
+		local win = state.get().win
+		vim.api.nvim_win_set_buf(win, state_data.buf)
+	else
+		M.create_chat_window()
+		local win = state.get().win
+		vim.api.nvim_win_set_buf(win, state_data.buf)
+	end
+
+	state.set_hidden(false)
+	vim.api.nvim_set_current_win(state.get().win)
+	keymaps.setup_terminal_keymaps()
+end
+
 function M.setup_file_watcher()
 	local state_data = state.get()
 	if not state_data.original_buf or not vim.api.nvim_buf_is_valid(state_data.original_buf) then

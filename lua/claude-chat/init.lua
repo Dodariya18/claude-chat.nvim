@@ -9,17 +9,19 @@ function M.setup(opts)
 	config.setup(opts)
 
 	vim.api.nvim_create_user_command("ClaudeChat", function(cmd_opts)
-		local user_input = ""
 		if cmd_opts.args and cmd_opts.args ~= "" then
-			user_input = cmd_opts.args
+			M.ask_claude(cmd_opts.args, cmd_opts.range, cmd_opts.line1, cmd_opts.line2)
 		else
-			local ok, input = pcall(vim.fn.input, "Ask Claude: ")
-			if not ok then
-				return
+			if state.is_session_active() then
+				M.toggle_chat_window()
+			else
+				local ok, input = pcall(vim.fn.input, "Ask Claude: ")
+				if not ok then
+					return
+				end
+				M.ask_claude(input, cmd_opts.range, cmd_opts.line1, cmd_opts.line2)
 			end
-			user_input = input
 		end
-		M.ask_claude(user_input, cmd_opts.range, cmd_opts.line1, cmd_opts.line2)
 	end, {
 		nargs = "?",
 		range = true,
@@ -43,6 +45,14 @@ function M.ask_claude(user_input, has_range, line1, line2)
 	end
 
 	window.start_claude_terminal(prompt)
+end
+
+function M.toggle_chat_window()
+	if state.is_window_visible() then
+		window.hide_chat_window()
+	else
+		window.restore_chat_window()
+	end
 end
 
 function M.close_chat()

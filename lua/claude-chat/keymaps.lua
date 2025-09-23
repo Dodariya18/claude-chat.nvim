@@ -1,6 +1,7 @@
 local M = {}
 local state = require "claude-chat.state"
 local utils = require "claude-chat.utils"
+local config = require "claude-chat.config"
 
 function M.setup_terminal_keymaps()
 	local state_data = state.get()
@@ -8,6 +9,9 @@ function M.setup_terminal_keymaps()
 	if not buf then
 		return
 	end
+
+	local options = config.get()
+	local keymaps = options.keymaps.terminal
 
 	vim.api.nvim_buf_set_keymap(buf, "n", "q", "", {
 		callback = function()
@@ -30,7 +34,8 @@ function M.setup_terminal_keymaps()
 		desc = "Enter insert mode at end of line",
 	})
 
-	vim.api.nvim_buf_set_keymap(buf, "t", "<C-c>", "", {
+	-- Terminal mode keymaps (work from terminal insert mode)
+	vim.api.nvim_buf_set_keymap(buf, "t", keymaps.interrupt, "", {
 		callback = function()
 			require("claude-chat").close_chat()
 		end,
@@ -39,7 +44,27 @@ function M.setup_terminal_keymaps()
 		desc = "Close Claude chat",
 	})
 
-	vim.api.nvim_buf_set_keymap(buf, "t", "<C-f>", "", {
+	-- Quick close alternative from terminal mode
+	vim.api.nvim_buf_set_keymap(buf, "t", keymaps.close, "", {
+		callback = function()
+			require("claude-chat").close_chat()
+		end,
+		noremap = true,
+		silent = true,
+		desc = "Close Claude chat",
+	})
+
+	-- Toggle window visibility from terminal mode
+	vim.api.nvim_buf_set_keymap(buf, "t", keymaps.toggle, "", {
+		callback = function()
+			require("claude-chat").toggle_chat_window()
+		end,
+		noremap = true,
+		silent = true,
+		desc = "Toggle Claude chat window",
+	})
+
+	vim.api.nvim_buf_set_keymap(buf, "t", keymaps.insert_file, "", {
 		callback = function()
 			if not state_data.job_id then
 				return
@@ -69,10 +94,51 @@ function M.setup_terminal_keymaps()
 		desc = "Insert current buffer filepath",
 	})
 
-	vim.api.nvim_buf_set_keymap(buf, "t", "<C-\\>", "<C-\\><C-N>", {
+	-- More intuitive normal mode exit
+	vim.api.nvim_buf_set_keymap(buf, "t", keymaps.normal_mode, "<C-\\><C-N>", {
 		noremap = true,
 		silent = true,
 		desc = "Exit terminal insert mode",
+	})
+
+	-- Keep the original for users who prefer it
+	vim.api.nvim_buf_set_keymap(buf, "t", "<C-\\><C-N>", "<C-\\><C-N>", {
+		noremap = true,
+		silent = true,
+		desc = "Exit terminal insert mode",
+	})
+
+	-- Set up auto-commands for better UX
+	M.setup_terminal_autocmds(buf)
+end
+
+function M.setup_terminal_autocmds(buf)
+	-- Auto-enter insert mode when clicking or focusing the terminal
+	vim.api.nvim_create_autocmd({ "BufEnter", "WinEnter" }, {
+		buffer = buf,
+		callback = function()
+			-- Only auto-enter insert mode if we're in normal mode in a terminal buffer
+			if vim.bo[buf].buftype == "terminal" and vim.fn.mode() == "n" then
+				vim.schedule(function()
+					if vim.api.nvim_buf_is_valid(buf) and vim.api.nvim_get_current_buf() == buf then
+						vim.cmd "startinsert"
+					end
+				end)
+			end
+		end,
+		desc = "Auto-enter insert mode in Claude terminal",
+	})
+
+	-- Set terminal-specific options
+	vim.api.nvim_create_autocmd("TermOpen", {
+		buffer = buf,
+		callback = function()
+			-- Make the terminal more responsive
+			vim.wo.number = false
+			vim.wo.relativenumber = false
+			vim.wo.signcolumn = "no"
+		end,
+		desc = "Configure Claude terminal appearance",
 	})
 end
 
