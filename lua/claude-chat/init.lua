@@ -39,6 +39,18 @@ function M.setup(opts)
 end
 
 function M.ask_claude(user_input, has_range, line1, line2)
+	-- Prevent multiple Claude instances
+	if state.is_session_active() then
+		if state.is_window_visible() then
+			-- Already visible, just focus it
+			vim.api.nvim_set_current_win(state.get().win)
+		else
+			-- Session exists but window hidden, restore it
+			window.restore_chat_window()
+		end
+		return
+	end
+
 	local ctx = context.get_context(has_range, line1, line2)
 
 	if #user_input == 0 and has_range == 0 then
@@ -68,7 +80,14 @@ function M.close_chat()
 	local state_data = state.get()
 
 	if state_data.win and vim.api.nvim_win_is_valid(state_data.win) then
-		vim.api.nvim_win_close(state_data.win, true)
+		-- Try to close the window, catch the error if it's the last window
+		local success, err = pcall(vim.api.nvim_win_close, state_data.win, true)
+		if not success and err:match "E444" then
+			-- This is the last window, we can't close it
+			-- Create a new empty buffer to replace the Claude buffer
+			local empty_buf = vim.api.nvim_create_buf(false, true)
+			vim.api.nvim_win_set_buf(state_data.win, empty_buf)
+		end
 	end
 
 	if state_data.job_id then

@@ -64,6 +64,8 @@ end
 
 function M.is_window_visible()
 	return state.win ~= nil and vim.api.nvim_win_is_valid(state.win) and not state.hidden
+		and state.buf ~= nil and vim.api.nvim_buf_is_valid(state.buf)
+		and vim.api.nvim_win_get_buf(state.win) == state.buf
 end
 
 function M.set_hidden(hidden)
